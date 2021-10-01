@@ -6,7 +6,8 @@ import Header from "./components/header/header.component";
 import HomePage from "./pages/homepage/homepage.component";
 import ShopPage from "./pages/shop/shop.component";
 import SignInAndSignUpPage from "./pages/sign-in-and-sign-up/sign-in-and-sign-up.component";
-import { auth } from "./firebase/firebase.utils";
+
+import { auth, createUserProfileDocument } from "./firebase/firebase.utils";
 
 class App extends React.Component {
   constructor() {
@@ -21,9 +22,27 @@ class App extends React.Component {
 
   componentDidMount() {
     // Returns back the function that can close subscription
-    this.unsubscribeFromAuth = auth.onAuthStateChanged((user) => {
-      this.setState({ currentUser: user });
-      console.log(user);
+    this.unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
+      // If user is authenticated try to get data from database and
+      // store it in our state
+      if (userAuth) {
+        const userRef = await createUserProfileDocument(userAuth);
+
+        // Modify our state each time data in database changes
+        userRef.onSnapshot((snapshot) => {
+          this.setState({
+            currentUser: {
+              id: snapshot.id,
+              ...snapshot.data(),
+            },
+          });
+
+          console.log(this.state);
+        });
+      } else {
+        // If user is not authenticated userAuth is null
+        this.setState({ currentUser: userAuth });
+      }
     });
   }
 
