@@ -26,6 +26,8 @@ class App extends React.Component {
       // If user is authenticated try to get data from database and
       // store it in our state
       if (userAuth) {
+        // Get link to the existed document in our database
+        // or create a new document
         const userRef = await createUserProfileDocument(userAuth);
 
         // Modify our state each time data in database changes
@@ -36,8 +38,6 @@ class App extends React.Component {
               ...snapshot.data(),
             },
           });
-
-          console.log(this.state);
         });
       } else {
         // If user is not authenticated userAuth is null
