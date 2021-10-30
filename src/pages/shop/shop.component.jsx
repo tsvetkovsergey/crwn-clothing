@@ -27,12 +27,38 @@ class ShopPage extends React.Component {
     const { updateCollections } = this.props;
     const collectionRef = firestore.collection("collections");
 
-    collectionRef.onSnapshot((snapshot) => {
+    collectionRef.get().then((snapshot) => {
       const collectionsMap = convertCollectionsSnapshotToMap(snapshot);
       updateCollections(collectionsMap);
       this.setState({ loading: false });
     });
   }
+
+  // componentDidMount() {
+  //   const { updateCollections } = this.props;
+  //   const collectionRef = firestore.collection("collections");
+
+  //   // We fetching data using Promise
+  //   // It works the same but now we don't have
+  //   // live reload and we fetches data
+  //   // only once during componentDidMount
+  //   collectionRef.get().then((snapshot) => {
+  //     const collectionsMap = convertCollectionsSnapshotToMap(snapshot);
+  //     updateCollections(collectionsMap);
+  //     this.setState({ loading: false });
+  //   });
+  // }
+
+  // componentDidMount() {
+  //   const { updateCollections } = this.props;
+  //   const collectionRef = firestore.collection("collections");
+
+  //   collectionRef.onSnapshot((snapshot) => {
+  //     const collectionsMap = convertCollectionsSnapshotToMap(snapshot);
+  //     updateCollections(collectionsMap);
+  //     this.setState({ loading: false });
+  //   });
+  // }
 
   render() {
     // We have access to match
