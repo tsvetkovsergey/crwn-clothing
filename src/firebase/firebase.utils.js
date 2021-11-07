@@ -12,7 +12,10 @@ const firebaseConfig = {
   appId: "1:529547267377:web:29a52991225dd69ab9b410",
   measurementId: "G-2QT18HXPTN",
 };
+firebase.initializeApp(firebaseConfig);
 
+// Creates new or finds existing user in database
+// Returns link to user in database
 export const createUserProfileDocument = async (userAuth, additionalData) => {
   if (!userAuth) return;
 
@@ -79,14 +82,23 @@ export const convertCollectionsSnapshotToMap = (collections) => {
   }, {});
 };
 
-firebase.initializeApp(firebaseConfig);
+// Useful when app starts
+// You can check if the user is signed in
+export const getCurrentUser = () => {
+  return new Promise((resolve, reject) => {
+    const unsubscribe = auth.onAuthStateChanged((userAuth) => {
+      unsubscribe();
+      resolve(userAuth);
+    }, reject);
+  });
+};
 
 export const auth = firebase.auth();
 export const firestore = firebase.firestore();
 
-const provider = new firebase.auth.GoogleAuthProvider();
-provider.setCustomParameters({ prompt: "select_account" });
-export const signInWithGoogle = () => auth.signInWithPopup(provider);
+export const googleProvider = new firebase.auth.GoogleAuthProvider();
+googleProvider.setCustomParameters({ prompt: "select_account" });
+export const signInWithGoogle = () => auth.signInWithPopup(googleProvider);
 
 // Export firebase in case we want the whole library
 export default firebase;

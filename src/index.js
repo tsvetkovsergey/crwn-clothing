@@ -10,6 +10,9 @@ import { PersistGate } from "redux-persist/integration/react";
 import "./index.css";
 import App from "./App";
 
+// Just to test some new JS concepts
+// import "./test-ideas";
+
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>

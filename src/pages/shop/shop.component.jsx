@@ -2,84 +2,32 @@ import React from "react";
 import { Route, Switch } from "react-router-dom";
 import { connect } from "react-redux";
 
-import {
-  firestore,
-  convertCollectionsSnapshotToMap,
-} from "../../firebase/firebase.utils";
-import { updateCollections } from "../../redux/shop/shop.actions";
+import { fetchCollectionsStart } from "../../redux/shop/shop.actions";
 
-import withSpinner from "../../components/with-spinner/with-spinner.component";
-
-import CollectionsOverview from "../../components/collections-overview/collections-overview.component";
-import CollectionPage from "../collection/collection.component";
-
-// Create new components (pages) that were upgraded with Spinners
-const CollectionsOverviewWithSpinner = withSpinner(CollectionsOverview);
-const CollectionPageWithSpinner = withSpinner(CollectionPage);
+import CollectionsOverviewContainer from "../../components/collections-overview/collections-overview.container";
+import CollectionPageContainer from "../collection/collection.container";
 
 class ShopPage extends React.Component {
-  // unsubscribeFromSnapshot = null;
-  state = {
-    loading: true,
-  };
-
   componentDidMount() {
-    const { updateCollections } = this.props;
-    const collectionRef = firestore.collection("collections");
-
-    collectionRef.get().then((snapshot) => {
-      const collectionsMap = convertCollectionsSnapshotToMap(snapshot);
-      updateCollections(collectionsMap);
-      this.setState({ loading: false });
-    });
+    const { fetchCollectionsStart } = this.props;
+    fetchCollectionsStart();
   }
-
-  // componentDidMount() {
-  //   const { updateCollections } = this.props;
-  //   const collectionRef = firestore.collection("collections");
-
-  //   // We fetching data using Promise
-  //   // It works the same but now we don't have
-  //   // live reload and we fetches data
-  //   // only once during componentDidMount
-  //   collectionRef.get().then((snapshot) => {
-  //     const collectionsMap = convertCollectionsSnapshotToMap(snapshot);
-  //     updateCollections(collectionsMap);
-  //     this.setState({ loading: false });
-  //   });
-  // }
-
-  // componentDidMount() {
-  //   const { updateCollections } = this.props;
-  //   const collectionRef = firestore.collection("collections");
-
-  //   collectionRef.onSnapshot((snapshot) => {
-  //     const collectionsMap = convertCollectionsSnapshotToMap(snapshot);
-  //     updateCollections(collectionsMap);
-  //     this.setState({ loading: false });
-  //   });
-  // }
 
   render() {
     // We have access to match
     // In this case match.path quals to "/shop"
     const { match } = this.props;
-    const { loading } = this.state;
     return (
       <div className="shop-page">
         <Switch>
           <Route
             exact
             path={`${match.path}`}
-            render={(props) => (
-              <CollectionsOverviewWithSpinner isLoading={loading} {...props} />
-            )}
+            component={CollectionsOverviewContainer}
           />
           <Route
             path={`${match.path}/:collectionId`}
-            render={(props) => (
-              <CollectionPageWithSpinner isLoading={loading} {...props} />
-            )}
+            component={CollectionPageContainer}
           />
         </Switch>
       </div>
@@ -88,7 +36,7 @@ class ShopPage extends React.Component {
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  updateCollections: (collections) => dispatch(updateCollections(collections)),
+  fetchCollectionsStart: () => dispatch(fetchCollectionsStart()),
 });
 
 export default connect(null, mapDispatchToProps)(ShopPage);
